@@ -18,7 +18,7 @@ use itertools::Itertools;
 use serde_json::Value;
 use std::cell::Cell;
 use std::ops::Deref;
-use xxhash_rust::xxh3::xxh3_64;
+use hashers::jenkins::oaat;
 
 pub struct IsarCollection {
     pub name: String,
@@ -52,7 +52,7 @@ impl IsarCollection {
         links: Vec<IsarLink>,
         backlinks: Vec<IsarLink>,
     ) -> Self {
-        let id = xxh3_64(name.as_bytes());
+        let id = oaat(name.as_bytes());
         IsarCollection {
             name: name.to_string(),
             id,

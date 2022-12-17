@@ -3,8 +3,7 @@ import 'dart:typed_data';
 
 import 'package:dartx/dartx.dart';
 import 'package:isar/isar.dart';
-
-import 'package:xxh3/xxh3.dart';
+import 'package:quiver/core.dart';
 
 class ObjectInfo {
   ObjectInfo({
@@ -27,7 +26,7 @@ class ObjectInfo {
   final List<ObjectIndex> indexes;
   final List<ObjectLink> links;
 
-  int get id => xxh3(utf8.encode(isarName) as Uint8List);
+  int get id => hashObjects(utf8.encode(isarName) as Uint8List);
 
   bool get isEmbedded => accessor == null;
 
@@ -37,12 +36,17 @@ class ObjectInfo {
       properties.where((it) => !it.isId).toList();
 
   String get getIdName => '_${dartName.decapitalize()}GetId';
+
   String get getLinksName => '_${dartName.decapitalize()}GetLinks';
+
   String get attachName => '_${dartName.decapitalize()}Attach';
 
   String get estimateSizeName => '_${dartName.decapitalize()}EstimateSize';
+
   String get serializeName => '_${dartName.decapitalize()}Serialize';
+
   String get deserializeName => '_${dartName.decapitalize()}Deserialize';
+
   String get deserializePropName =>
       '_${dartName.decapitalize()}DeserializeProp';
 }
@@ -175,7 +179,7 @@ class ObjectIndex {
   final bool unique;
   final bool replace;
 
-  late final id = xxh3(utf8.encode(name) as Uint8List);
+  int get id => hashObjects(utf8.encode(name) as Uint8List);
 }
 
 class ObjectLink {
@@ -201,9 +205,9 @@ class ObjectLink {
 
   int id(String objectIsarName) {
     final col = isBacklink ? targetCollectionIsarName : objectIsarName;
-    final colId = xxh3(utf8.encode(col) as Uint8List, seed: isBacklink ? 1 : 0);
+    final colId = hash2(utf8.encode(col) as Uint8List, isBacklink ? 1 : 0);
 
     final name = targetLinkIsarName ?? isarName;
-    return xxh3(utf8.encode(name) as Uint8List, seed: colId);
+    return hash2(utf8.encode(name) as Uint8List, colId);
   }
 }
